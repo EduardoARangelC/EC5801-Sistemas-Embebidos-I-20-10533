@@ -1,6 +1,8 @@
 #Tarea 1 EC5801 Sistemas Embebidos I
 #Eduardo Rangel Carnet: 20-10533
 
+import time
+
 # 1) Implementacion de la clase Matriz
 
 class Matriz:
@@ -121,7 +123,51 @@ class Vector(Punto3D):
         y = self.get_y()
         z = self.get_z()
         return ((x**2) + (y**2) + (z**2)) ** 0.5
-    
+
+# 3) Polimorfismo: Disco Duro, RAM y SRAM
+class Memoria:
+    def __init__(self, tamano, retardo):
+        self.memoria = [0] * tamano  # Tamaño de la memoria
+        self.retardo = retardo       # Retardo 
+
+    def escribir(self, direccion, dato):
+        if 0 <= direccion < len(self.memoria):
+            time.sleep(self.retardo) # Simulamos el retardo
+            self.memoria[direccion] = dato
+            print(f"[{self.__class__.__name__}] Dato '{dato}' escrito en {direccion}.")
+        else:
+            print(f"[{self.__class__.__name__}] Error: Dirección de memoria fuera de rango.")
+
+    def leer(self, direccion):
+        if 0 <= direccion < len(self.memoria):
+            time.sleep(self.retardo) # Simulamos el retardo
+            dato = self.memoria[direccion]
+            print(f"[{self.__class__.__name__}] Dato '{dato}' leído de  {direccion}.")
+            return dato
+        else:
+            print(f"[{self.__class__.__name__}] Error: Dirección de memoria fuera de rango.")
+            return None
+
+# Clases Hijas
+class SRAM(Memoria):
+    def __init__(self, tamano):
+        super().__init__(tamano, retardo= 2) # Rápido
+
+class RAM(Memoria):
+    def __init__(self, tamano):
+        super().__init__(tamano, retardo= 4)  # Medio
+
+class DiscoDuro(Memoria):
+    def __init__(self, tamano):
+        super().__init__(tamano, retardo= 8)  # Lento
+
+# Funciones Polimórficas del Bus Manejador
+def bus_escribir(dispositivo, direccion, dato):
+    dispositivo.escribir(direccion, dato)
+
+def bus_leer(dispositivo, direccion):
+    return dispositivo.leer(direccion)
+
 # Ejemplo de uso
 def main():
     print("PRUEBA DE LA PARTE 1: MATRICES")
@@ -183,7 +229,29 @@ def main():
     # Prueba de la clase hija Vector y su magnitud
     vector1 = Vector(3, 4, 0)
     print(f"Vector de prueba: ({vector1.get_x()}, {vector1.get_y()}, {vector1.get_z()})")
-    print(f"Magnitud del vector de prueba (3, 4, 0): {vector1.magnitud()}")
+    print(f"Magnitud del vector de prueba (3, 4, 0): {vector1.magnitud()}\n")
+
+    print("PRUEBA DE LA PARTE 3: POLIMORFISMO")
+    # Creamos instancias de memorias de tamaño 10
+    memoria_sram = SRAM(10)
+    memoria_ram = RAM(10)
+    disco_duro = DiscoDuro(10)
+
+    # El bus escribe y lee sin importarle qué tipo de memoria es
+    print("Operaciones en SRAM:")
+    bus_escribir(memoria_sram, direccion=2, dato=250)
+    bus_leer(memoria_sram, direccion=2)
+
+    print("\nOperaciones en RAM:")
+    bus_escribir(memoria_ram, direccion=4, dato=500)
+    bus_leer(memoria_ram, direccion=4)
+
+    print("\nOperaciones en Disco Duro:")
+    bus_escribir(disco_duro, direccion=8, dato=1000)
+    bus_leer(disco_duro, direccion=8)
+
+    print("\nPrueba de error de rango")
+    bus_leer(memoria_ram, direccion=20)
 
 if __name__ == "__main__":
     main()
