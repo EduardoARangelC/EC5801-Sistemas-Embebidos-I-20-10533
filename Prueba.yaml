@@ -1,0 +1,16 @@
+elementos:
+- altura: 1.7
+  descripcion: Especialista en idiomas
+  edad: 23
+  lista_de_habilidades:
+  - Poliglota
+  nombre: Juan
+  peso: 64.5
+- altura: 1.78
+  descripcion: "Especialista en tecnolog\xEDa"
+  edad: 26
+  lista_de_habilidades:
+  - Python
+  - Tecnico de fibra optica
+  nombre: Fabio
+  peso: 69.0
